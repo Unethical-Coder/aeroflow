@@ -1,0 +1,30 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ingestion-service
+
+  # Database Configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aeroflow_db
+    username: aeroflow_user
+    password: aeroflow_password
+    driver-class-name: org.postgresql.Driver
+
+  # Hibernate Configuration (Auto-create tables for now)
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  # Kafka Producer Configuration
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
