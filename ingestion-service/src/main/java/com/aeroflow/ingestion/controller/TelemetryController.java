@@ -1,7 +1,9 @@
 package com.aeroflow.ingestion.controller;
 
 import com.aeroflow.ingestion.dto.TaskTelemetryDto;
+import com.aeroflow.ingestion.service.TelemetryProducerService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,14 +14,19 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/telemetry")
+@RequiredArgsConstructor // Lombok creates a constructor for our service injection
 public class TelemetryController {
+
+    private final TelemetryProducerService producerService;
 
     @PostMapping
     public ResponseEntity<Void> ingestTelemetry(@Valid @RequestBody TaskTelemetryDto payload) {
-        // For now, we are just proving the door is open and validation works
-        log.info("Received valid telemetry for Task ID: {} from User ID: {}", payload.getTaskId(), payload.getUserId());
         
-        // Return 202 Accepted (Meaning: We got it, and we will process it asynchronously)
+        log.info("Received valid telemetry for Task ID: {}", payload.getTaskId());
+        
+        // Pass the payload to our Kafka Producer
+        producerService.publishTelemetry(payload);
+        
         return ResponseEntity.accepted().build();
     }
 }
